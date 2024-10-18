@@ -27,15 +27,24 @@ const corsOptions = {
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true, // Permitir cookies y encabezados de autenticación
+  credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
 }
 
 // Usar CORS con las opciones configuradas
 app.use(cors(corsOptions))
 
-// Manejar solicitudes preflight OPTIONS para todas las rutas
-app.options('*', cors(corsOptions))
+// ** Aquí es donde agregamos el middleware OPTIONS **
+app.options('*', (req, res) => {
+  res.setHeader(
+    'Access-Control-Allow-Origin',
+    'https://app-eventos-front.vercel.app'
+  )
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.sendStatus(204) // No Content
+})
 
 // Middleware para parsear JSON
 app.use(express.json())
