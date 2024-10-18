@@ -20,7 +20,6 @@ const allowedOrigins = [
 // Configurar CORS dinámico
 const corsOptions = {
   origin: function (origin, callback) {
-    // Permitir solicitudes sin origen para algunas situaciones (ej. pruebas locales)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true)
     } else {
@@ -29,11 +28,14 @@ const corsOptions = {
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true, // Permitir cookies y encabezados de autenticación
-  allowedHeaders: ['Content-Type', 'Authorization'] // Asegúrate de permitir estos encabezados
+  allowedHeaders: ['Content-Type', 'Authorization']
 }
 
 // Usar CORS con las opciones configuradas
 app.use(cors(corsOptions))
+
+// Manejar solicitudes preflight OPTIONS para todas las rutas
+app.options('*', cors(corsOptions))
 
 // Middleware para parsear JSON
 app.use(express.json())
