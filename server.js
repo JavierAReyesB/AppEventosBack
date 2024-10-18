@@ -1,6 +1,6 @@
 const express = require('express')
-const cors = require('cors')
-const connectDB = require('./src/config/db')
+const cors = require('cors') // Importa cors
+const connectDB = require('./src/config/db') // Conexión a la base de datos
 const userRoutes = require('./src/routes/userRoutes')
 const eventRoutes = require('./src/routes/eventRoutes')
 const reviewRoutes = require('./src/routes/reviewRoutes')
@@ -11,42 +11,18 @@ const app = express()
 // Conectar a la base de datos
 connectDB()
 
-// Lista de orígenes permitidos
-const allowedOrigins = [
-  'http://localhost:5173', // Desarrollo local
-  'https://app-eventos-front.vercel.app' // Producción
-]
-
-// Configurar CORS dinámico
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true)
-    } else {
-      callback(new Error('No permitido por CORS'))
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
-}
-
-// Usar CORS con las opciones configuradas
-app.use(cors(corsOptions))
-
-// ** Aquí es donde agregamos el middleware OPTIONS **
-app.options('*', (req, res) => {
-  res.setHeader(
-    'Access-Control-Allow-Origin',
-    'https://app-eventos-front.vercel.app'
-  )
-  app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*') // Permite todas las solicitudes
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE')
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    next()
+// Configurar CORS de forma global, antes de cualquier ruta
+app.use(
+  cors({
+    origin: 'https://app-eventos-front.vercel.app', // Permitir solicitudes desde el frontend en Vercel
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    credentials: true, // Permitir cookies y encabezados de autenticación
+    allowedHeaders: ['Content-Type', 'Authorization'] // Encabezados permitidos
   })
-})
+)
+
+// Middleware para manejar preflight OPTIONS
+app.options('*', cors()) // Esto se asegura de que todas las solicitudes OPTIONS sean manejadas correctamente
 
 // Middleware para parsear JSON
 app.use(express.json())
