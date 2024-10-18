@@ -13,12 +13,18 @@ const app = express()
 // Conectar a la base de datos
 connectDB()
 
+// Lista de orígenes permitidos para CORS
+const allowedOrigins = [
+  'http://localhost:5173', // Para desarrollo local
+  'https://app-eventos-front.vercel.app' // Para producción (reemplaza con la URL de tu frontend en Vercel)
+]
+
 // Configurar CORS
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Permitir solicitudes desde el frontend
+    origin: allowedOrigins, // Permitir solicitudes solo desde estos orígenes
     methods: 'GET,POST,PUT,DELETE', // Métodos permitidos
-    credentials: true // Si envías cookies o encabezados específicos
+    credentials: true // Permitir credenciales (cookies, encabezados de autenticación, etc.)
   })
 )
 
