@@ -1,7 +1,5 @@
-require('dotenv').config()
-
 const express = require('express')
-const cors = require('cors') // Importa CORS
+const cors = require('cors')
 const connectDB = require('./src/config/db')
 const userRoutes = require('./src/routes/userRoutes')
 const eventRoutes = require('./src/routes/eventRoutes')
@@ -13,20 +11,29 @@ const app = express()
 // Conectar a la base de datos
 connectDB()
 
-// Lista de orígenes permitidos para CORS
+// Lista de orígenes permitidos
 const allowedOrigins = [
-  'http://localhost:5173', // Para desarrollo local
-  'https://app-eventos-front.vercel.app' // Para producción (reemplaza con la URL de tu frontend en Vercel)
+  'http://localhost:5173', // Desarrollo local
+  'https://app-eventos-front.vercel.app' // Producción
 ]
 
-// Configurar CORS
-app.use(
-  cors({
-    origin: allowedOrigins, // Permitir solicitudes solo desde estos orígenes
-    methods: 'GET,POST,PUT,DELETE', // Métodos permitidos
-    credentials: true // Permitir credenciales (cookies, encabezados de autenticación, etc.)
-  })
-)
+// Configurar CORS dinámico
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Permitir solicitudes sin origen para algunas situaciones (ej. pruebas locales)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('No permitido por CORS'))
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true, // Permitir cookies y encabezados de autenticación
+  allowedHeaders: ['Content-Type', 'Authorization'] // Asegúrate de permitir estos encabezados
+}
+
+// Usar CORS con las opciones configuradas
+app.use(cors(corsOptions))
 
 // Middleware para parsear JSON
 app.use(express.json())
