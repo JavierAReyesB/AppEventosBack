@@ -16,8 +16,11 @@ connectDB()
 // Configurar CORS
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Permitir solicitudes desde el frontend
-    methods: 'GET,POST,PUT,DELETE', // Métodos permitidos
+    origin: [
+      'http://localhost:5173', // Permitir solicitudes locales (desarrollo)
+      'https://app-eventos-front.vercel.app' // Permitir solicitudes desde Vercel (producción)
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
     credentials: true // Si envías cookies o encabezados específicos
   })
 )
