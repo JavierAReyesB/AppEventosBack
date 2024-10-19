@@ -1,6 +1,8 @@
+require('dotenv').config()
+
 const express = require('express')
-const cors = require('cors') // Importa cors
-const connectDB = require('./src/config/db') // Conexión a la base de datos
+const cors = require('cors') // Importa CORS
+const connectDB = require('./src/config/db')
 const userRoutes = require('./src/routes/userRoutes')
 const eventRoutes = require('./src/routes/eventRoutes')
 const reviewRoutes = require('./src/routes/reviewRoutes')
@@ -11,18 +13,14 @@ const app = express()
 // Conectar a la base de datos
 connectDB()
 
-// Configurar CORS de forma global, antes de cualquier ruta
+// Configurar CORS
 app.use(
   cors({
-    origin: 'https://app-eventos-front.vercel.app', // Permitir solicitudes desde el frontend en Vercel
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-    credentials: true, // Permitir cookies y encabezados de autenticación
-    allowedHeaders: ['Content-Type', 'Authorization'] // Encabezados permitidos
+    origin: 'http://localhost:5173', // Permitir solicitudes desde el frontend
+    methods: 'GET,POST,PUT,DELETE', // Métodos permitidos
+    credentials: true // Si envías cookies o encabezados específicos
   })
 )
-
-// Middleware para manejar preflight OPTIONS
-app.options('*', cors()) // Esto se asegura de que todas las solicitudes OPTIONS sean manejadas correctamente
 
 // Middleware para parsear JSON
 app.use(express.json())
